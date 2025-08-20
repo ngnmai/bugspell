@@ -3,4 +3,14 @@
 data/*
 !data/json_template.jsonl
 venv/
+
+# on lumi
+bash/
+debug/
+*.out
+*/__pycache__
+core
+
+
+
 !.gitignore

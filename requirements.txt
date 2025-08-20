@@ -1,6 +1,12 @@
-python>=3.9
-huggingface
+accelerate
 datasets
-transformers
-peft
+huggingface-hub
+matplotlib
 mlflow
+numpy
+pandas
+pillow
+scikit-learn
+scipy
+tokenizers
+transformers
