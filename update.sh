@@ -1,1 +1,1 @@
-pip uninstall torch
+pip install jiwer

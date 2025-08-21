@@ -33,13 +33,14 @@ def training_args(args):
 		save_steps=args.save_steps,
 		logging_steps=args.logging_steps,
 		learning_rate=3e-4 if USE_LORA else 1e-5,
-		per_device_train_batch_size=2,
-		per_device_eval_batch_size=2,
+		per_device_train_batch_size=4,
+		per_device_eval_batch_size=4,
 		num_train_epochs=args.num_train_epochs,
+		gradient_accumulation_steps=4,
 		predict_with_generate=True,
 		fp16=True,
 		push_to_hub=False,
-		report_to="none"
+		report_to=["mlflow"]
 	)
 
 '''
