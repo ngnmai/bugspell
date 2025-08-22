@@ -10,6 +10,7 @@ debug/
 *.out
 */__pycache__
 core
+update.sh
 
 
 

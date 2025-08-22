@@ -22,24 +22,6 @@ cer_metric = evaluate.load("cer") # -> character error rate: measure how many ch
 bleu_metric = evaluate.load("sacrebleu") #-> translation style metric comparing n-grams of pred vs reference
 
 
-class CustomSeq2SeqTrainer(Seq2SeqTrainer):
-	# Compensate with the HF old version 
-	def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
-		# Remove num_items_in_batch if present
-		inputs.pop("num_items_in_batch", None)
-		outputs = model(**inputs)
-		loss = outputs.loss
-		return (loss, outputs) if return_outputs else loss
-
-
-class MLflowLoggingCallback(TrainerCallback):
-    def on_log(self, args, state, control, logs=None, **kwargs):
-        if logs is not None:
-            for key, value in logs.items():
-                if isinstance(value, (int, float)):
-                    mlflow.log_metric(key, value, step=state.global_step)
-
-
 def parse_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--train_ds_dir", type=str)
@@ -159,7 +141,7 @@ def main():
 
 	# ------------------------------------
 	print('Start fine-tuning')
-	print('Test mlflow track with quick benchmark')
+	print('Full finetuning')
 	with mlflow.start_run():
 		trainer = CustomSeq2SeqTrainer(
 			model=model,

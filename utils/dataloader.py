@@ -21,9 +21,9 @@ mixed = interleave_datasets(
 )
 
 # Save full blended dataset
-full_dataset_path = "./data/spellcheck_dataset_small.jsonl"
+full_dataset_path = "./data/spellcheck_dataset_big.jsonl"
 with open(full_dataset_path, "w", encoding="utf-8") as f:
-    for ex in mixed.take(75000):  # Adjust limit if needed
+    for ex in mixed.take(275000):  # Adjust limit if needed
         f.write(json.dumps(ex, ensure_ascii=False) + "\n")
 
 print("✅ Saved full blended dataset to spellcheck_dataset_small.jsonl")
@@ -43,13 +43,13 @@ val_lines = lines[train_end:val_end]
 test_lines = lines[val_end:]
 
 # Save splits
-with open("./data/spellcheck_ds_train_small.jsonl", "w", encoding="utf-8") as f:
+with open("./data/spellcheck_ds_train_big.jsonl", "w", encoding="utf-8") as f:
     f.writelines(train_lines)
 
-with open("./data/spellcheck_ds_val_small.jsonl", "w", encoding="utf-8") as f:
+with open("./data/spellcheck_ds_val_big.jsonl", "w", encoding="utf-8") as f:
     f.writelines(val_lines)
 
-with open("./data/spellcheck_ds_test_small.jsonl", "w", encoding="utf-8") as f:
+with open("./data/spellcheck_ds_test_big.jsonl", "w", encoding="utf-8") as f:
     f.writelines(test_lines)
 
 print(f"✅ Split completed: {len(train_lines)} train, {len(val_lines)} validation, {len(test_lines)} test entries.")

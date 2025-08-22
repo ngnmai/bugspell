@@ -4,13 +4,12 @@ from transformers import (
 	AutoTokenizer,
 	AutoModelForSeq2SeqLM,
 	DataCollatorForSeq2Seq,
-	Seq2SeqTrainingArguments
+	Seq2SeqTrainingArguments, 
+	GenerationConfig, 
+	Seq2SeqTrainer, 
+	TrainerCallback
 )
-from transformers import GenerationConfig
-from transformers import AutoConfig, AutoTokenizer, AutoModelForSeq2SeqLM
 from peft import LoraConfig, get_peft_model
-
-
 
 def config_lora(args):
 	return LoraConfig(
@@ -21,8 +20,6 @@ def config_lora(args):
 		bias="none",
 		task_type="SEQ_2_SEQ_LM"
 	)
-
-USE_LORA = True
 
 def training_args(args):
 	return Seq2SeqTrainingArguments(
@@ -38,39 +35,25 @@ def training_args(args):
 		num_train_epochs=args.num_train_epochs,
 		gradient_accumulation_steps=4,
 		predict_with_generate=True,
+		load_best_model_at_end=True, 
 		fp16=True,
 		push_to_hub=False,
 		report_to=["mlflow"]
 	)
 
-'''
-def model_init(args):
-	MODEL_NAME = "Salesforce/codet5p-2b"
+class CustomSeq2SeqTrainer(Seq2SeqTrainer):
+	# Compensate with the HF old version 
+	def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+		# Remove num_items_in_batch if present
+		inputs.pop("num_items_in_batch", None)
+		outputs = model(**inputs)
+		loss = outputs.loss
+		return (loss, outputs) if return_outputs else loss
 
-	# Load encoder and decoder configs
-	# config = AutoConfig.from_pretrained(MODEL_NAME, trust_remote_code=True)
-	#config.encoder = AutoConfig.from_pretrained(MODEL_NAME, trust_remote_code=True)
-	#config.decoder = AutoConfig.from_pretrained(MODEL_NAME, trust_remote_code=True)
 
-
-	tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME,
-				 trust_remote_code=True)
-	config = AutoConfig.from_pretrained(MODEL_NAME, trust_remote_code=True)
-	config.eos_token_id=2
-	config.bos_token_id=1
-	config.pad_token_id=0
-	config.decoder_start_token_id=tokenizer.convert_tokens_to_ids(['<pad>'])[0]
-
-	model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME, 
-				config=config, 
-				trust_remote_code=True)
-	if args.use_lora:
-		model = get_peft_model(model, config_lora(args))
-	model.print_trainable_parameters()
-
-	data_collator = DataCollatorForSeq2Seq(tokenizer, model=model, padding=True)
-	
-	return model, tokenizer, data_collator, training_args(args)
- 
-
-'''
+class MLflowLoggingCallback(TrainerCallback):
+    def on_log(self, args, state, control, logs=None, **kwargs):
+        if logs is not None:
+            for key, value in logs.items():
+                if isinstance(value, (int, float)):
+                    mlflow.log_metric(key, value, step=state.global_step)
