@@ -10,7 +10,8 @@ debug/
 *.out
 */__pycache__
 core
-update.sh
+*.sh
+select_gpu
 
 
 
