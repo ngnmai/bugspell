@@ -1,6 +1,5 @@
 .local/
 output/fine-tune
-output/quickbenchmark
 
 data/*
 !data/json_template.jsonl
