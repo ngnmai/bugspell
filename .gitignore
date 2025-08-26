@@ -1,6 +1,4 @@
 .local/
-output/fine-tune
-
 data/*
 !data/json_template.jsonl
 venv/
