@@ -42,11 +42,14 @@ def evaluate_model(model_path, test_file):
     references = []
     exact_match_count = 0
 
-    print(f"Evaluating {len(data)} samples...")
+    print(f"Evaluating {len(data_list)} samples...")
 
     for data in data_list:
         input_text = data["input"].strip()
         target_text = data["target"].strip()
+
+        print(input_text)
+        print(target_text)
 
         pred_text = generate_prediction(input_text, tokenizer, model, device)
 
