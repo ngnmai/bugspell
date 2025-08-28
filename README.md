@@ -49,7 +49,7 @@ Current there are 3 metrics being added in the evaluation script: sacrebleu, cer
 
 ```bash
 python evaluation.py --model_path $MODEL_PATH \
-                     --test_file "{path to the test dataset}
+                     --test_file {path to the test dataset}
 ```
 
 ## Next todos or possible future features
