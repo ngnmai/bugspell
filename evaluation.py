@@ -6,6 +6,8 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import evaluate
 
 def generate_prediction(text, tokenizer, model, device, max_length=512, num_beams=4):
+    if not text.strip():  # Skip empty inputs
+        return ""
     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True).to(device)
     with torch.no_grad():
         outputs = model.generate(
@@ -44,12 +46,15 @@ def evaluate_model(model_path, test_file):
 
     print(f"Evaluating {len(data_list)} samples...")
 
+    '''
     for data in data_list:
         input_text = data["input"].strip()
         target_text = data["target"].strip()
 
         print(input_text)
         print(target_text)
+        if not input_text or not target_text:
+            continue
 
         pred_text = generate_prediction(input_text, tokenizer, model, device)
 
@@ -58,6 +63,28 @@ def evaluate_model(model_path, test_file):
 
         if pred_text.strip() == target_text.strip():
             exact_match_count += 1
+    '''
+
+    for data in tqdm(data_list, desc="Evaluating"):
+        input_text = data.get("input", "").strip()
+        target_text = data.get("target", "").strip()
+
+        # Skip if input or target is empty
+        if not input_text or not target_text:
+            continue
+
+        if exact_match_count == 1: 
+            print(input_text)
+            print(target_text)
+
+        pred_text = generate_prediction(input_text, tokenizer, model, device)
+
+        predictions.append(pred_text)
+        references.append(target_text)
+
+        if pred_text.strip() == target_text.strip():
+            exact_match_count += 1
+
 
     # Compute metrics
     bleu_score = bleu_metric.compute(predictions=[p.split() for p in predictions],
