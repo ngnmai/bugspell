@@ -1,6 +1,8 @@
-# bugspell
+# bugspell :bug:
 _STILL A WORK IN PROGRESS_
-Spell checker for both codes and natural language
+
+Spell checker for both codes and natural language.
+
 This spell checked was fine-tuned based on CodeT5p-2b with a mixture of Python code, Markdown files and Natural Language (English)
 
 ## Installation and usage
@@ -42,6 +44,17 @@ python inference.py --model_path $MODEL_PATH \
                     --output_file {path to your output file}
 ```
 
-## Next todos
+## Evaluation
+Current there are 3 metrics being added in the evaluation script: sacrebleu, cer and wer. However, cer and wer will be better to look at to check on the model's efficiency!
+
+```bash
+python evaluation.py --model_path $MODEL_PATH \
+                     --test_file "{path to the test dataset}
+```
+
+## Next todos or possible future features
+- Integrate this code with a VSCode extension
+- Extend this to real-time spell checker
+- Add OCR for additional feature
 
 ## Other notes
